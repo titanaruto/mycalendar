@@ -32,7 +32,7 @@ gulp.task('browser-sync', function() {
 
 // Обьединяем файлы sass, сжимаем и переменовываем
 gulp.task('styles', function() {
-	return gulp.src('src/sass/**/*.scss')
+	return gulp.src('src/sass/style.scss')
 		.pipe(sass({ outputStyle: 'expand' }).on("error", notify.onError()))
 		//.pipe(rename({ suffix: '.min', prefix : '' }))
 		.pipe(concat('style.min.css'))
