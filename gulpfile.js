@@ -1,121 +1,84 @@
-'use strict';
+var syntax        = 'sass', // выберете используемый синтаксис sass или scss, и перенастройте нужные пути в файле gulp.js и папки в вашего шаблоне wp
+		gulpversion   = '4'; // Выберете обязателньо свою версию Gulp: 3 или 4
 
-const { src, dest, series, parallel, watch } = require('gulp');
-const sass = require('gulp-sass');
-const postcss = require('gulp-postcss');
-const autoprefixer = require('autoprefixer');
-const csso = require('gulp-csso');
-const gcmq = require('gulp-group-css-media-queries');
-const del = require('del');
-const htmlmin = require('gulp-htmlmin');
-const imagemin = require('gulp-imagemin');
-const svgstore = require('gulp-svgstore');
-const plumber = require('gulp-plumber');
-const rigger = require('gulp-rigger');
-const stylelint = require('gulp-stylelint');
-const babel = require('gulp-babel');
-const uglify = require('gulp-uglify');
-const concat = require('gulp-concat');
-const rename = require('gulp-rename');
-const server = require('browser-sync').create();
+var gulp          = require('gulp'),
+    autoprefixer  = require('gulp-autoprefixer'),
+    browsersync   = require('browser-sync'),
+    concat        = require('gulp-concat'),
+    cache         = require('gulp-cache'),
+    cleancss      = require('gulp-clean-css'),
+    ftp           = require('vinyl-ftp'),
+		imagemin      = require('gulp-imagemin'),
+		notify        = require('gulp-notify'),
+		pngquant      = require('imagemin-pngquant'),
+		gutil         = require('gulp-util' ),
+		rename        = require('gulp-rename'),
+		rsync         = require('gulp-rsync'),
+		sass          = require('gulp-sass'),
+		uglify        = require('gulp-uglify');
 
-function html() {
-  return src('src/*.html')
-    .pipe(rigger())
-    .pipe(htmlmin({ collapseWhitespace: true }))
-    .pipe(dest('build'));
-}
+	
+// Незабываем менять 'wp-gulp.loc' на свой локальный домен
+gulp.task('browser-sync', function() {
+	browsersync({
+		proxy: "kirilovka.apteka.loc",
+		notify: false,
+		// open: false,
+		// tunnel: true,
+		// tunnel: "gulp-wp-fast-start", //Demonstration page: http://gulp-wp-fast-start.localtunnel.me
+	})
+});
 
-function styles() {
-  return src('src/sass/styles.scss')
-    .pipe(plumber())
-    .pipe(
-      stylelint({
-        reporters: [{ formatter: 'string', console: true }],
-      }),
-    )
-    .pipe(sass())
-    .pipe(postcss([autoprefixer()]))
-    .pipe(gcmq())
-    .pipe(dest('build/css'))
-    .pipe(csso())
-    .pipe(rename('styles.min.css'))
-    .pipe(dest('build/css'))
-    .pipe(server.stream());
-}
 
-function scripts() {
-  return src('src/js/**/*.js')
-    .pipe(plumber())
-    .pipe(babel())
-    .pipe(concat('scripts.js'))
-    .pipe(dest('build/js'))
-    .pipe(uglify())
-    .pipe(rename('scripts.min.js'))
-    .pipe(dest('build/js'));
-}
+// Обьединяем файлы sass, сжимаем и переменовываем
+gulp.task('styles', function() {
+	return gulp.src('src/sass/main.scss')
+	.pipe(sass({ outputStyle: 'expand' }).on("error", notify.onError()))
+	//.pipe(rename({ suffix: '.min', prefix : '' }))
+	.pipe(concat('style.min.css'))
+	.pipe(autoprefixer(['last 15 versions']))
+	.pipe(cleancss( {level: { 1: { specialComments: 0 } } })) // Opt., comment out when debugging
+	.pipe(gulp.dest('src/css'))
+	.pipe(browsersync.stream())
+});
 
-function sprite() {
-  return src('src/images/icons/icon-*.svg')
-    .pipe(svgstore({ inlineSvg: true }))
-    .pipe(rename('sprite.svg'))
-    .pipe(dest('build/images'));
-}
 
-function images() {
-  return src(['src/images/**/*.{png,jpg,jpeg,svg}', '!src/images/icons/**/*'])
-    .pipe(
-      imagemin([
-        imagemin.jpegtran({ progressive: true }),
-        imagemin.optipng({ optimizationLevel: 3 }),
-        imagemin.svgo({
-          plugins: [{ removeViewBox: false }, { cleanupIDs: false }],
-        }),
-      ]),
-    )
-    .pipe(dest('build/images'));
-}
+// Обьединяем файлы скриптов, сжимаем и переменовываем
+gulp.task('scripts', function() {
+	return gulp.src([
+		'src/js/script.js',
+		])
+	.pipe(concat('scripts.min.js'))
+	// .pipe(uglify()) // Mifify js (opt.)
+	.pipe(gulp.dest('src/js'))
+	.pipe(browsersync.reload({ stream: true }))
+});
 
-function fonts() {
-  return src('src/fonts/**/*').pipe(dest('build/fonts'));
-}
 
-function watcher(done) {
-  watch('src/**/*.html').on('change', series(html, server.reload));
-  watch('src/sass/**/*.scss').on('change', series(styles, server.reload));
-  watch('src/js/**/*.js').on('change', series(scripts, server.reload));
+// сжимаем картинки в папке images в шаблоне, и туда же возвращаем в готовом виде
+gulp.task('imgmin-theme', function() {
+	return gulp.src('src/images/**/*')
+	.pipe(cache(imagemin())) // Cache Images
+	.pipe(gulp.dest('src/images'));
+});
 
-  done();
-}
 
-function serve() {
-  return server.init({
-    server: 'build',
-    notify: false,
-    open: false,
-    cors: true,
-    ui: false,
-    logPrefix: 'DevServer',
-    host: 'localhost',
-    port: 8080,
+
+if (gulpversion == 3) {
+  gulp.task('watch', ['styles', 'scripts', 'browser-sync'], function() {
+	  gulp.watch(['src/sass/**/*.scss','src/css/*.css'], ['styles']); // Наблюдение за sass файлами в папке sass в теме
+	  gulp.watch(['src/js/**/*.js'], ['scripts']); // Наблюдение за JS файлами js в теме
+    gulp.watch('src/**/*.php', browsersync.reload) // Наблюдение за sass файлами php в теме
   });
+  gulp.task('default', ['watch']);
 }
 
-function clean() {
-  return del('./build');
+
+if (gulpversion == 4) {
+	gulp.task('watch', function() {
+		gulp.watch('src/sass/**/*.scss', gulp.parallel('styles')); // Наблюдение за sass файлами в папке sass в теме
+		gulp.watch(['src/js/**/*.js'], gulp.parallel('scripts')); // Наблюдение за JS файлами в папке js
+    gulp.watch('src/**/*.php', browsersync.reload) // Наблюдение за sass файлами php в теме
+	});
+	gulp.task('default', gulp.parallel('styles', 'scripts', 'browser-sync', 'watch'));
 }
-
-function prepare() {
-  return del(['**/.gitkeep', 'README.md']);
-}
-
-const build = series(
-  clean,
-  parallel(sprite, images, fonts, html, styles, scripts),
-);
-
-const start = series(build, watcher, serve);
-
-exports.prepare = prepare;
-exports.build = build;
-exports.start = start;

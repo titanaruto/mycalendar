@@ -32,7 +32,7 @@ include('views/includes/head.php'); ?>
                     <h2 class="title"><?= $article->title ?></h2>
                     <p><?= $article->description ?></p>
                     <span><?= date('d.m.Y', $article->publishDate); ?></span>
-                    <button onclick="learnMore('#blog-item',<?= $article->ID ?> ); return false;">Learn More</button>
+                    <buttonnclick="learnMore('#blog-item',<?= $article->ID ?> ); return false;">Learn More</button>
                 </div>
             </article>
         <?php endforeach; ?>
