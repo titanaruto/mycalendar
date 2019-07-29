@@ -8,35 +8,32 @@
 
 class DataMonth
 {
-    public function getCurrentDateRus($date = "")
-    {
-        if (!empty($date)) {
-            $currentDate = $date;
-        } else {
-            $currentDate = date(".m.Y");
-        }
 
-        $_monthsList = array(
-            ".01." => "Января",
-            ".02." => "Февраля",
-            ".03." => "Марта",
-            ".04." => "Апреля",
-            ".05." => "Мая",
-            ".06." => "Июня",
-            ".07." => "Июля",
-            ".08." => "Августа",
-            ".09." => "Сентября",
-            ".10." => "Октября",
-            ".11." => "Ноября",
-            ".12." => "Декабря"
-        );
-        $_mD = date(".m."); //для замены
-        $currentDate = str_replace($_mD, " " . $_monthsList[$_mD] . " ", $currentDate);
-        return $currentDate;
+
+    public function rdate($param, $time=0) {
+        if(intval($time)==0)$time=time();
+        $MonthNames=array("Январь", "Февраль", "Март", "Апрель", "Май", "Июнь", "Июль", "Август", "Сентябрь", "Октябрь", "Ноябрь", "Декабрь");
+        if(strpos($param,'M')===false) return date($param, $time);
+        else return date(str_replace('M',$MonthNames[date('n',$time)-1],$param), $time);
     }
 
-    public function GetMonthWeek()
+
+
+    public function GetMonthWeek($month = null,$year = null)
     {
+
+        if(!empty($month)){
+            $m = $month;
+        } else{
+            $m = date('m');
+        }
+        if(!empty($year)){
+            $y = $year;
+        } else{
+            $y = date('Y');
+        }
+
+
         $dayofmonth = date('t');
 
         // Счётчик для дней месяца
@@ -46,7 +43,7 @@ class DataMonth
         $num = 0;
         for ($i = 0; $i < 7; $i++) {
             // Вычисляем номер дня недели для числа
-            $dayofweek = date('w', mktime(0, 0, 0, date('m'), $day_count, date('Y')));
+            $dayofweek = date('w', mktime(0, 0, 0, $m, $day_count, $y));
 
             // Приводим к числа к формату 1 - понедельник, ..., 6 - суббота
             $dayofweek = $dayofweek - 1;

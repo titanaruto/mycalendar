@@ -18,21 +18,15 @@ class DecoderJson
         return $json_note;
     }
 
-    /** function jsonParsing
-     * gets all ID from array
-     **/
-    private function jsonParsing($array)
-    {
-        if (!isset($array[0]["ID"])) {
-            return $array["ID"];
-        } else {
-            $result = "";
-            for ($i = 0; $i < count($array); $i++) {
-                $result .= $array[$i]["ID"] . ',';
-            }
-            return rtrim($result, ',');
-        }
+
+    public function AddNoteWithFile($file, $note){
+        $noteList = $this->getNoteWithFile($file);
+        $noteList[] = $note;
+
+        file_put_contents($file,json_encode($noteList));
+        unset($noteList);
     }
+
 
 
 }

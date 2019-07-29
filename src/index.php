@@ -7,20 +7,17 @@ include('views/includes/head.php'); ?>
     <?php
     require 'BL/DataMonth.php';
     $DataMonth = new DataMonth();
-    $currentDate = $DataMonth->getCurrentDateRus();
-    $week = $DataMonth->GetMonthWeek();
-
-
-    require 'BL/DataMapper.php';
-    $DataMapper = new DataMapper();
-    $notes = $DataMapper->getAllNote();
-//    print_r($notes);
+    $currentDate = $DataMonth->rdate("M Y");
+    $nowDay = date("d");
+    $countDayInMonth = date("t");
+    $year =  date("Y");
+    $month =  date("m");
     ?>
 
     <caption class="datepicker-caption">
-        <a href="index.html" class="datepicker-prev">Previous</a>
-        <span class="datepicker-title"><?= $currentDate; ?></span>
-        <a href="index.html" class="datepicker-next">Next</a>
+        <a href="javascript:void(0);" class="datepicker-prev">Previous</a>
+        <span class="datepicker-title" data-time="<?=strtotime(date('Y-m-01'));?>"><?= $currentDate; ?></span>
+        <a href="javascript:void(0);" class="datepicker-next">Next</a>
     </caption>
     <thead class="datepicker-head">
     <tr>
@@ -35,22 +32,43 @@ include('views/includes/head.php'); ?>
     </thead>
     <tbody class="datepicker-body">
     <?php
-    $count = 1;
-    for ($i = 0; $i < count($week); $i++) {
-        echo "<tr>";
-        for ($j = 0; $j < 7; $j++) {
-            if (!empty($week[$i][$j])) {
-                // Если имеем дело с субботой и воскресенья
-                // подсвечиваем их
-                if ($j == 5 || $j == 6) {
-                    echo '<td class="datepicker-td day-off"><a href="#" data-id="'.$week[$i][$j].'weak'.$i.'">' . $week[$i][$j] . '</a></td>';
-                } else  echo '<td class="datepicker-td "><a href="#" data-id="'.$week[$i][$j].'weak'.$i.'">' . $week[$i][$j] . '</a></td>';
-            } else {
-                echo '<td class="datepicker-td off"><a href="#" data-id="'.$count.'weak'.$i.'">' . $count . '</a></td>';
-                $count++;
+    $countDay = 1;
+    $countBig = false;
+    for($i = 0; $i < 5; $i++){
+
+            echo "<tr>";
+
+            for ($j = 0; $j< 7; $j++){
+                if($countBig === false){
+                    if ($nowDay == $countDay) {
+                        $today = "today";
+                    } else {
+                        $today = "";
+                    }
+                    $now = mktime(0, 0, 0, $month, $countDay,$year);
+                    $ID = date("Y-m-d", $now);
+                    if ($j == 5 || $j == 6) {
+                        echo '<td class="datepicker-td ' . $today . ' day-off"><a href="javascript:void(0);" data-id="' . $ID . '">' . $countDay . '</a></td>';
+                    } else {
+                        echo '<td class="datepicker-td ' . $today . '"><a href="javascript:void(0);" data-id="' . $ID . '">' .$countDay . '</a></td>';
+                    }
+                    if($countDay == $countDayInMonth){
+                        $countBig = true;
+                        $countDay = 0;
+                    }
+                    $countDay++;
+                } else if($countBig === true) {
+                    $now = mktime(0, 0, 0, $month+1, $countDay,$year);
+                    $ID = date("Y-m-d", $now);
+                    echo '<td class="datepicker-td off"><a href="javascript:void(0);" data-id="' . $ID . '">' . $countDay . '</a></td>';
+                    $countDay++;
+                }
+
             }
-        }
-        echo "</tr>";
+
+
+            echo "</tr>";
+
     }
     ?>
 
@@ -58,7 +76,10 @@ include('views/includes/head.php'); ?>
         <td colspan="7"><i class="datepicker-icon fa fa-plus-circle fa-4x" data-toggle="modal"
                            data-target="#note_Modal" aria-hidden="true"></i></td>
     </tr>
+    <tbody class="result_hover"></tbody>
     </tbody>
+
+
 </table>
 <!-- Modal -->
 <div class="modal fade" id="note_Modal" tabindex="-1" role="dialog" aria-labelledby="note_Modal"

@@ -6,14 +6,16 @@ require 'DecoderJson.php';
 class DataMapper
 {
     private $file;
+    private $notes;
+    private $DecoderJsonInsertDB;
     public function __construct()
     {
-        //decodes json and inserts data into the database
-        $DecoderJsonInsertDB = new DecoderJson();
-        $this->file = $DecoderJsonInsertDB->getNoteWithFile("notes/notes.json");
+        $this->DecoderJsonInsertDB = new DecoderJson();
+        $this->file = "notes/notes.json";
+        $this->notes =  $this->DecoderJsonInsertDB->getNoteWithFile($this->file);
     }
 
-    //Fills the class object Article
+    //Fills the class object Note
     private function fillFromRowNote($row)
     {
         $note = new Note();
@@ -28,10 +30,10 @@ class DataMapper
     }
 
 
-    // get all article
+    // get all note
     public function getAllNote()
     {
-        $result = $this->file;
+        $result = $this->notes;
         if (empty ($result))
             return $result;
 
@@ -44,23 +46,13 @@ class DataMapper
         return $array;
 
     }
-
-    //get one article
-    public function getNoteByID($ID)
-    {
-
-        $result = $this->file;
-
-        if (empty ($result))
-            return $result;
-
-        $array = array();
-        foreach ($result as $row) {
-            $c = $this->fillFromRowNote($row);
-            $array [] = $c;
-        }
-
-        return $array;
+    public function AddNote($date, $description){
+        $notes = $this->notes;
+        $count = count($notes);
+        $ID = $count+1;
+        $note= array("ID" => $ID, "DATE"=> $date, "DESCRIPTION" => $description);
+        $this->DecoderJsonInsertDB->AddNoteWithFile($this->file,$note);
+        return true;
     }
 
 
