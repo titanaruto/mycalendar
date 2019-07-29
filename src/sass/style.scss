@@ -1,10 +1,11 @@
-
 @import 'helpers/variables';
 @import 'helpers/mixins';
 @import 'helpers/reset';
+
 body {
   font: 14px/24px 'Lucida Grande', Verdana, sans-serif;
   color: #404040;
   background: #313944;
 }
+
 @import 'datapicker';

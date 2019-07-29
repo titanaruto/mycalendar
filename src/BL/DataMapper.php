@@ -8,11 +8,12 @@ class DataMapper
     private $file;
     private $notes;
     private $DecoderJsonInsertDB;
+
     public function __construct()
     {
         $this->DecoderJsonInsertDB = new DecoderJson();
         $this->file = "notes/notes.json";
-        $this->notes =  $this->DecoderJsonInsertDB->getNoteWithFile($this->file);
+        $this->notes = $this->DecoderJsonInsertDB->getNoteWithFile($this->file);
     }
 
     //Fills the class object Note
@@ -46,16 +47,16 @@ class DataMapper
         return $array;
 
     }
-    public function AddNote($date, $description){
+    // add note
+    public function AddNote($date, $description)
+    {
         $notes = $this->notes;
         $count = count($notes);
-        $ID = $count+1;
-        $note= array("ID" => $ID, "DATE"=> $date, "DESCRIPTION" => $description);
-        $this->DecoderJsonInsertDB->AddNoteWithFile($this->file,$note);
+        $ID = $count + 1;
+        $note = array("ID" => $ID, "DATE" => $date, "DESCRIPTION" => $description);
+        $this->DecoderJsonInsertDB->AddNoteWithFile($this->file, $note);
         return true;
     }
-
-
 
 
 }

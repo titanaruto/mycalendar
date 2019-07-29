@@ -16,8 +16,8 @@ $countDayInMonth = date("t", $tempTime);
 $nowDay = date("d");
 $nowYear = date("Y");
 $nowMonth = date("m");
-$year =  date("Y",$tempTime);
-$month =  date("m",$tempTime);
+$year = date("Y", $tempTime);
+$month = date("m", $tempTime);
 ?>
     <caption class="datepicker-caption">
         <a href="javascript:void(0);" class="datepicker-prev">Previous</a>
@@ -40,31 +40,31 @@ $month =  date("m",$tempTime);
     <?php
     $countDay = 1;
     $countBig = false;
-    for($i = 0; $i < 5; $i++){
+    for ($i = 0; $i < 5; $i++) {
 
         echo "<tr>";
 
-        for ($j = 0; $j< 7; $j++){
-            if($countBig === false){
+        for ($j = 0; $j < 7; $j++) {
+            if ($countBig === false) {
                 if ($nowDay == $countDay && $month == $nowMonth && $year == $nowYear) {
                     $today = "today";
                 } else {
                     $today = "";
                 }
-                $now = mktime(0, 0, 0, $month, $countDay,$year);
+                $now = mktime(0, 0, 0, $month, $countDay, $year);
                 $ID = date("Y-m-d", $now);
                 if ($j == 5 || $j == 6) {
                     echo '<td class="datepicker-td ' . $today . ' day-off"><a href="javascript:void(0);" data-id="' . $ID . '">' . $countDay . '</a></td>';
                 } else {
-                    echo '<td class="datepicker-td ' . $today . '"><a href="javascript:void(0);" data-id="' . $ID . '">' .$countDay . '</a></td>';
+                    echo '<td class="datepicker-td ' . $today . '"><a href="javascript:void(0);" data-id="' . $ID . '">' . $countDay . '</a></td>';
                 }
-                if($countDay == $countDayInMonth){
+                if ($countDay == $countDayInMonth) {
                     $countBig = true;
                     $countDay = 0;
                 }
                 $countDay++;
-            } else if($countBig === true) {
-                $now = mktime(0, 0, 0, $month+1, $countDay,$year);
+            } else if ($countBig === true) {
+                $now = mktime(0, 0, 0, $month + 1, $countDay, $year);
                 $ID = date("Y-m-d", $now);
                 echo '<td class="datepicker-td off"><a href="javascript:void(0);" data-id="' . $ID . '">' . $countDay . '</a></td>';
                 $countDay++;

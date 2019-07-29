@@ -10,13 +10,13 @@ include('views/includes/head.php'); ?>
     $currentDate = $DataMonth->rdate("M Y");
     $nowDay = date("d");
     $countDayInMonth = date("t");
-    $year =  date("Y");
-    $month =  date("m");
+    $year = date("Y");
+    $month = date("m");
     ?>
 
     <caption class="datepicker-caption">
         <a href="javascript:void(0);" class="datepicker-prev">Previous</a>
-        <span class="datepicker-title" data-time="<?=strtotime(date('Y-m-01'));?>"><?= $currentDate; ?></span>
+        <span class="datepicker-title" data-time="<?= strtotime(date('Y-m-01')); ?>"><?= $currentDate; ?></span>
         <a href="javascript:void(0);" class="datepicker-next">Next</a>
     </caption>
     <thead class="datepicker-head">
@@ -34,40 +34,40 @@ include('views/includes/head.php'); ?>
     <?php
     $countDay = 1;
     $countBig = false;
-    for($i = 0; $i < 5; $i++){
+    for ($i = 0; $i < 5; $i++) {
 
-            echo "<tr>";
+        echo "<tr>";
 
-            for ($j = 0; $j< 7; $j++){
-                if($countBig === false){
-                    if ($nowDay == $countDay) {
-                        $today = "today";
-                    } else {
-                        $today = "";
-                    }
-                    $now = mktime(0, 0, 0, $month, $countDay,$year);
-                    $ID = date("Y-m-d", $now);
-                    if ($j == 5 || $j == 6) {
-                        echo '<td class="datepicker-td ' . $today . ' day-off"><a href="javascript:void(0);" data-id="' . $ID . '">' . $countDay . '</a></td>';
-                    } else {
-                        echo '<td class="datepicker-td ' . $today . '"><a href="javascript:void(0);" data-id="' . $ID . '">' .$countDay . '</a></td>';
-                    }
-                    if($countDay == $countDayInMonth){
-                        $countBig = true;
-                        $countDay = 0;
-                    }
-                    $countDay++;
-                } else if($countBig === true) {
-                    $now = mktime(0, 0, 0, $month+1, $countDay,$year);
-                    $ID = date("Y-m-d", $now);
-                    echo '<td class="datepicker-td off"><a href="javascript:void(0);" data-id="' . $ID . '">' . $countDay . '</a></td>';
-                    $countDay++;
+        for ($j = 0; $j < 7; $j++) {
+            if ($countBig === false) {
+                if ($nowDay == $countDay) {
+                    $today = "today";
+                } else {
+                    $today = "";
                 }
-
+                $now = mktime(0, 0, 0, $month, $countDay, $year);
+                $ID = date("Y-m-d", $now);
+                if ($j == 5 || $j == 6) {
+                    echo '<td class="datepicker-td ' . $today . ' day-off"><a href="javascript:void(0);" data-id="' . $ID . '">' . $countDay . '</a></td>';
+                } else {
+                    echo '<td class="datepicker-td ' . $today . '"><a href="javascript:void(0);" data-id="' . $ID . '">' . $countDay . '</a></td>';
+                }
+                if ($countDay == $countDayInMonth) {
+                    $countBig = true;
+                    $countDay = 0;
+                }
+                $countDay++;
+            } else if ($countBig === true) {
+                $now = mktime(0, 0, 0, $month + 1, $countDay, $year);
+                $ID = date("Y-m-d", $now);
+                echo '<td class="datepicker-td off"><a href="javascript:void(0);" data-id="' . $ID . '">' . $countDay . '</a></td>';
+                $countDay++;
             }
 
+        }
 
-            echo "</tr>";
+
+        echo "</tr>";
 
     }
     ?>

@@ -10,7 +10,7 @@
  */
 class DecoderJson
 {
-
+    //get json notes
     public function getNoteWithFile($file)
     {
         $string = file_get_contents($file);
@@ -18,7 +18,7 @@ class DecoderJson
         return $json_note;
     }
 
-
+    //put json note
     public function AddNoteWithFile($file, $note){
         $noteList = $this->getNoteWithFile($file);
         $noteList[] = $note;
