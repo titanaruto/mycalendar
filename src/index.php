@@ -4,9 +4,22 @@ include('views/includes/head.php'); ?>
 </head>
 <body>
 <table class="datepicker">
+    <?php
+    require 'BL/DataMonth.php';
+    $DataMonth = new DataMonth();
+    $currentDate = $DataMonth->getCurrentDateRus();
+    $week = $DataMonth->GetMonthWeek();
+
+
+    require 'BL/DataMapper.php';
+    $DataMapper = new DataMapper();
+    $notes = $DataMapper->getAllNote();
+//    print_r($notes);
+    ?>
+
     <caption class="datepicker-caption">
         <a href="index.html" class="datepicker-prev">Previous</a>
-        <span class="datepicker-title"><?= date("F Y"); ?></span>
+        <span class="datepicker-title"><?= $currentDate; ?></span>
         <a href="index.html" class="datepicker-next">Next</a>
     </caption>
     <thead class="datepicker-head">
@@ -21,59 +34,34 @@ include('views/includes/head.php'); ?>
     </tr>
     </thead>
     <tbody class="datepicker-body">
-    <tr>
-        <td class="datepicker-td"><a href="index.html">1</a></td>
-        <td class="datepicker-td"><a href="index.html">2</a></td>
-        <td class="datepicker-td"><a href="index.html">3</a></td>
-        <td class="datepicker-td"><a href="index.html">4</a></td>
-        <td class="datepicker-td"><a href="index.html">5</a></td>
-        <td class="datepicker-td day-off"><a href="index.html">6</a></td>
-        <td class="datepicker-td day-off"><a href="index.html">7</a></td>
-    </tr>
-    <tr>
-        <td class="datepicker-td"><a href="index.html">8</a></td>
-        <td class="datepicker-td"><a href="index.html">9</a></td>
-        <td class="datepicker-td "><a href="index.html">10</a></td>
-        <td class="datepicker-td"><a href="index.html">11</a></td>
-        <td class="datepicker-td"><a href="index.html">12</a></td>
-        <td class="datepicker-td day-off"><a href="index.html">13</a></td>
-        <td class="datepicker-td day-off"><a href="index.html">14</a></td>
-    </tr>
-    <tr>
-        <td class="datepicker-td"><a href="index.html">15</a></td>
-        <td class="datepicker-td"><a href="index.html">16</a></td>
-        <td class="datepicker-td"><a href="index.html">17</a></td>
-        <td class="datepicker-td"><a href="index.html">18</a></td>
-        <td class="datepicker-td"><a href="index.html">19</a></td>
-        <td class="datepicker-td day-off"><a href="index.html">20</a></td>
-        <td class="datepicker-td day-off"><a href="index.html">21</a></td>
-    </tr>
-    <tr>
-        <td class="datepicker-td"><a href="index.html">22</a></td>
-        <td class="datepicker-td"><a href="index.html">23</a></td>
-        <td class="datepicker-td"><a href="index.html">24</a></td>
-        <td class="datepicker-td"><a href="index.html">25</a></td>
-        <td class="datepicker-td"><a href="index.html">26</a></td>
-        <td class="datepicker-td day-off"><a href="index.html">27</a></td>
-        <td class="datepicker-td today day-off"><a href="index.html">28</a></td>
-    </tr>
-    <tr>
-        <td class="datepicker-td"><a href="index.html">29</a></td>
-        <td class="datepicker-td"><a href="index.html">30</a></td>
-        <td class="datepicker-td off"><a href="index.html">1</a></td>
-        <td class="datepicker-td off"><a href="index.html">2</a></td>
-        <td class="datepicker-td off"><a href="index.html">3</a></td>
-        <td class="datepicker-td off"><a href="index.html">4</a></td>
-        <td class="datepicker-td off"><a href="index.html">5</a></td>
-    </tr>
+    <?php
+    $count = 1;
+    for ($i = 0; $i < count($week); $i++) {
+        echo "<tr>";
+        for ($j = 0; $j < 7; $j++) {
+            if (!empty($week[$i][$j])) {
+                // Если имеем дело с субботой и воскресенья
+                // подсвечиваем их
+                if ($j == 5 || $j == 6) {
+                    echo '<td class="datepicker-td day-off"><a href="#" data-id="'.$week[$i][$j].'weak'.$i.'">' . $week[$i][$j] . '</a></td>';
+                } else  echo '<td class="datepicker-td "><a href="#" data-id="'.$week[$i][$j].'weak'.$i.'">' . $week[$i][$j] . '</a></td>';
+            } else {
+                echo '<td class="datepicker-td off"><a href="#" data-id="'.$count.'weak'.$i.'">' . $count . '</a></td>';
+                $count++;
+            }
+        }
+        echo "</tr>";
+    }
+    ?>
+
     <tr>
         <td colspan="7"><i class="datepicker-icon fa fa-plus-circle fa-4x" data-toggle="modal"
-                           data-target="#exampleModal" aria-hidden="true"></i></td>
+                           data-target="#note_Modal" aria-hidden="true"></i></td>
     </tr>
     </tbody>
 </table>
 <!-- Modal -->
-<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+<div class="modal fade" id="note_Modal" tabindex="-1" role="dialog" aria-labelledby="note_Modal"
      aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">

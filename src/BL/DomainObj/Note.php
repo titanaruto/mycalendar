@@ -1,13 +1,11 @@
 <?php
-
 /**
  * Created by PhpStorm.
  * User: Админ
- * Date: 07.10.2018
- * Time: 20:13
  */
-class Tags
+class Note
 {
     public $ID;
-    public $name;
+    public $date;
+    public $description;
 }
